@@ -1,3 +1,5 @@
+// Code to get the absolute timing offsets with the downloaded ones from CCDB and the relative ones from fit.C
+
 void GetData(TString fname, double *y, const int N) {
     ifstream fin(fname);
     double prod = 0.0; double sum = 0.0;

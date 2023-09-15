@@ -1,3 +1,5 @@
+# launch script to submit the swif2 jobs
+
 #!/usr/bin/env python
 
 # Alex Austregesilo
@@ -359,8 +361,8 @@ def main(argv):
     #    print str(len(good_runs)) + " good runs in range: " + str(MINRUN) + " - " + str(MAXRUN)
 
     # FIND & ADD JOBS
-    list_runs_calib = np.loadtxt("runs_calib.dat")
-    list_runs_evio  = np.loadtxt("runs_evio.dat")
+    list_runs_calib = np.loadtxt("runs_calib.dat", comments='#')
+    list_runs_evio  = np.loadtxt("runs_evio.dat", comments='#')
 
     for RUN in list_runs_calib:
     #for RUN in range(MINRUN, MAXRUN + 1):

@@ -1,3 +1,5 @@
+// Code to get TDC-RF time differences w.r.t. pulse height (ADC counts) using Gaussian fits on the TAGH_timewalk histograms
+
 using namespace RooFit;
 TH1* GetHistogram(TFile *f, int counter, int ph_bin) {
     stringstream ss_c; ss_c << counter;

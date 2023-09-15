@@ -1,3 +1,7 @@
+# Script to check if the histogram files are in place and rename them
+# For every run, the one output file is renamed to remove the evio file number so that the consistency is kept
+# Then all the files are moved to the same folder for the convenience when browsing
+
 #!/bin/bash
 
 while read RUN;

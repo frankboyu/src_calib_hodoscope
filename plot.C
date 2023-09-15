@@ -1,3 +1,6 @@
+// Code to produce statistics and plots to verify the calibrations
+
+// Import packages
 #include <TProfile.h>
 #include <TH2.h>
 #include <TCanvas.h>
@@ -28,6 +31,7 @@
 #include "TImage.h"
 using namespace std;
 
+// Declare variables
 TFile *f;
 TH2I *h_offsets[3];
 TH2I *h_tdc[274];
@@ -35,15 +39,19 @@ TH2I *h_tw[274];
 
 void plot(int run_numb) 
 {
+    // Get the input file
     char infile[300];
     sprintf(infile,"results/hists/hd_root_%d.root",run_numb);
     //sprintf(infile,"/work/halld/data_monitoring/RunPeriod-2021-11/mon_ver07/rootfiles/hd_root_0%d.root",run_numb);
     TFile *f = new TFile (infile,"R");
+    
+    // Set up the canvas
     TCanvas *c1 = new TCanvas("c1","c1", 10, 200, 960, 600);
     TLine *line = new TLine(0.0, 0.0, 4000.0, 0.0);
     line->SetLineColor(kRed);
     line->SetLineWidth(1);
 
+    // Get the histograms
     h_offsets[0] = (TH2I*)f->Get(Form("TAGH_timewalk/Offsets/TAGH_tdcadcTimeDiffVsSlotID"));
     h_offsets[1] = (TH2I*)f->Get(Form("TAGH_timewalk/Offsets/TAGHRF_tdcTimeDiffVsSlotID"));
     h_offsets[2] = (TH2I*)f->Get(Form("TAGH_timewalk/Offsets/tagh_time_rf"));
@@ -57,10 +65,12 @@ void plot(int run_numb)
         h_tw[i]->SetTitle(Form("Timewalk Col %i",i+1));
     }
 
+    // Set up the output statistics file
     char statsfile_name[300];
     sprintf(statsfile_name,"results/verify/stats-%d.txt",run_numb);
     FILE *statsfile = fopen(statsfile_name,"w");
   
+    // Initialize the offset arrays
     double tdc_adc_mean[274], tdc_adc_error[274], tdc_rf_mean[274], tdc_rf_error[274], t_rf_mean[274], t_rf_error[274];
     memset(tdc_adc_mean,0.0,274); 
     memset(tdc_adc_error,0.0,274); 
@@ -69,10 +79,11 @@ void plot(int run_numb)
     memset(t_rf_mean,0.0,274); 
     memset(t_rf_error,0.0,274);
 
+    // Get the offsets using Gaussian fits and print them
     for (Int_t i = 0; i < 274; ++i)
     {
-//         if (i<127 || (i>177 && i<257))
         if (i < 274)
+//         if (i<127 || (i>177 && i<257))
         {
             TF1 *f1 = new TF1("f1","gaus",-10.,10.);
             f1->SetParameter(1,0);
@@ -132,6 +143,7 @@ void plot(int run_numb)
     }
     fclose(statsfile);
     
+    // Set up the graphs
     TGraph *g_dt[3]={NULL};
     double channels[274], zeros[274];
     memset(channels,0,274); memset(zeros,0,274);
@@ -140,7 +152,6 @@ void plot(int run_numb)
         channels[i] = i+1;
         zeros[i] = 0;
     }
-    
     g_dt[0] = new TGraphErrors(274, channels, tdc_adc_mean, zeros, tdc_adc_error); 
     g_dt[0]->SetTitle(Form("%d TDC-ADC", run_numb)); 
     g_dt[1] = new TGraphErrors(274, channels, t_rf_mean, zeros, t_rf_error);
@@ -148,17 +159,19 @@ void plot(int run_numb)
     g_dt[2] = new TGraphErrors(274, channels, tdc_rf_mean, zeros, tdc_rf_error);
     g_dt[2]->SetTitle(Form("%d TDC-RF", run_numb)); 
     
-    char plotfile[300];
+    // Set up the output plot file (the plots detailed for all the channels as backup)
+    char plotfile[300], plotfile1[300], plotfile2[300];
     sprintf(plotfile,"results/verify/plots-%d.pdf",run_numb);
-    char plotfile1[300], plotfile2[300];  
-    strcpy(plotfile1,plotfile);  
+    strcpy(plotfile1, plotfile);  
     strcpy(plotfile2, plotfile); 
-    strcat(plotfile1,"(");   
-    strcat(plotfile2,")");  
+    strcat(plotfile1, "(");   
+    strcat(plotfile2, ")");  
     
+    // Set up the output image file (the plot checked by eyes)
     char imagefile[300];
     sprintf(imagefile,"results/verify/image-%d.png",run_numb);
 
+    // Plot the graph using the fitting results
     for (Int_t i = 0; i < 3; ++i)
     {
         g_dt[i]->GetYaxis()->SetRangeUser(-4,4);
@@ -173,6 +186,7 @@ void plot(int run_numb)
         c1->Clear();
     }
     
+    // Plot the original histograms
     for (Int_t i = 0; i < 3; ++i)
     {
         h_offsets[i]->SetMarkerSize(0.25);
@@ -182,6 +196,8 @@ void plot(int run_numb)
         c1->Print(plotfile1,"pdf");
         c1->Clear();
     }
+    
+    // Plot the time-walked corrected TDC-RF distribution for all the channels
     c1->Divide(8,5);    
     int plot = 1;
     for (Int_t i = 0; i < 274; ++i)

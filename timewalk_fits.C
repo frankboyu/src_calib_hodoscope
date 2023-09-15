@@ -1,3 +1,5 @@
+// Code to get the time-walk correction constants
+
 void GetData(TString fname, double *y, double *dy, double &min, double &max) {
     ifstream fin(fname);
     const int N = 41; // pulse-height bins

@@ -1,3 +1,5 @@
+// Code to get the relative timing offsets using Gaussian fits on the TAGH_timewalk histograms
+
 using namespace RooFit;
 TH1* GetHistogram(TFile *f, TString hname, TString htype, int counter) {
     stringstream ss; ss << counter;
