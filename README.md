@@ -2,7 +2,7 @@
 
 Scripts to calibrate the tagger hodoscope of the GlueX detector at Jefferson Lab Hall D for the SRC/CT experiment and beyond
 
-JLab file system: /work/halld2/home/boyu/src_calib_hodoscope
+JLab: /work/halld2/home/boyu/src_calib_hodoscope
 
 GitHub: https://github.com/frankboyu/src_calib_hodoscope/tree/master
 
